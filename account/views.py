@@ -9,6 +9,9 @@ from rest_framework.permissions import IsAuthenticated
 from .models import FriendRequest, Friendship, User 
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
+from django.core.cache import cache
+from django.utils import timezone
+from datetime import timedelta
 
 
 def get_tokens_for_user(user):
@@ -72,18 +75,38 @@ class UserPasswordResetView(APIView):
 
 class SendFriendRequestView(APIView):
     permission_classes = [IsAuthenticated]
+
     def post(self, request, *args, **kwargs):
         to_user_id = request.data.get('to_user_id')
         to_user = get_object_or_404(User, id=to_user_id)
         from_user = request.user
+
+        # Check if from_user and to_user are the same
         if from_user == to_user:
             return Response({'error': 'You cannot send a friend request to yourself.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Check if a friend request has already been sent
         if FriendRequest.objects.filter(from_user=from_user, to_user=to_user).exists():
             return Response({'error': 'Friend request already sent.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Check if they are already friends
         if Friendship.objects.filter(Q(user1=from_user, user2=to_user) | Q(user1=to_user, user2=from_user)).exists():
             return Response({'error': 'You are already friends.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Check rate limit
+        cache_key = f'friend_request_count_{from_user.id}'
+        friend_request_count = cache.get(cache_key, 0)
+
+        if friend_request_count >= 3:
+            return Response({'error': 'You cannot send more than 3 friend requests within a minute.'}, status=status.HTTP_429_TOO_MANY_REQUESTS)
+
+        # Save friend reques
         friend_request = FriendRequest(from_user=from_user, to_user=to_user)
         friend_request.save()
+
+        # Update rate limit count
+        cache.set(cache_key, friend_request_count + 1, timeout=60)  # Set the timeout to 60 seconds
+
         return Response({'msg': 'Friend request sent successfully.'}, status=status.HTTP_201_CREATED)
 
 class AcceptFriendRequestView(APIView):

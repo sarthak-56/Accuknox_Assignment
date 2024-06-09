@@ -23,7 +23,7 @@
 
    python manage.py migrate
 
-5.Run the development server:
+ 5.Run the development server:
 
   python manage.py runserver
 

@@ -174,3 +174,10 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 APPEND_SLASH = False
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',  # For local memory caching
+        'LOCATION': 'unique-snowflake',
+    }
+}

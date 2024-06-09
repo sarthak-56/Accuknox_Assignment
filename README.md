@@ -5,7 +5,7 @@
 
 Clone the repository:
    
-   git clone https://github.com/sarthak-56/Accuknox_Assignment/master.git
+   git clone https://github.com/sarthak-56/Accuknox_Assignment.git
    cd Accuknox_Assignment
 
 ### Backend (Django)

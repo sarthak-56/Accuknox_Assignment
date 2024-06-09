@@ -13,4 +13,4 @@ COPY . /app/
 
 CMD ["python", "manage.py", "runserver"]
 
-# Docker run command = docker run -p 8000:8000 ae8a548d2a7d (Imagecode)
+

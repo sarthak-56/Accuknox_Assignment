@@ -10,7 +10,8 @@ const UserSearchAndFriendRequest = () => {
   const [success, setSuccess] = useState(null);
   const [isSending, setIsSending] = useState(false);
   const [friends, setFriends] = useState([]);
-
+  const [friendRequestCount, setFriendRequestCount] = useState(0);
+  const [lastRequestTime, setLastRequestTime] = useState(null);
 
   useEffect(() => {
     const fetchFriends = async () => {
@@ -19,7 +20,7 @@ const UserSearchAndFriendRequest = () => {
         if (!token) {
           return;
         }
-  
+
         const response = await axios.get('http://127.0.0.1:8000/api/user/friends/', {
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -28,10 +29,18 @@ const UserSearchAndFriendRequest = () => {
         console.error('Error fetching friends:', error);
       }
     };
-  
+
     fetchFriends();
-  }, []);
-  
+
+    const interval = setInterval(() => {
+      if (lastRequestTime && (Date.now() - lastRequestTime) > 60000) {
+        setFriendRequestCount(0);
+        setLastRequestTime(null);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [lastRequestTime]);
 
   const handleSearch = async () => {
     if (!searchKeyword.trim()) {
@@ -51,11 +60,17 @@ const UserSearchAndFriendRequest = () => {
   };
 
   const handleSendRequest = async (userId) => {
+    if (friendRequestCount >= 3) {
+      setError('You cannot send more than 3 friend requests within a minute.');
+      return;
+    }
+
     setIsSending(true);
     setError('');
 
     if (friends.some((friend) => friend.id === userId)) {
       setError('User is already a friend');
+      setIsSending(false);
       return;
     }
 
@@ -74,6 +89,8 @@ const UserSearchAndFriendRequest = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setSuccess(response.data.msg);
+      setFriendRequestCount((prevCount) => prevCount + 1);
+      setLastRequestTime(Date.now());
     } catch (error) {
       if (error.response) {
         setError(error.response.data.detail || 'You can not send request multiple times to one user');

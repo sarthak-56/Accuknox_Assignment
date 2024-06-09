@@ -40,4 +40,9 @@ Clone the repository:
 3. Start the development server:
 
    npm start
-   
+
+### Development server in Dockerfile 
+
+### frontend(React.js) run command docker run -p 3000:3000 cbbea5002c95
+
+### backend(Django) run command docker run -p 8000:8000 ae8a548d2a7d

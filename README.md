@@ -1,15 +1,48 @@
-## Django REST Framework Complete Authentication API with Simple JWT
-### Video Link:- https://youtu.be/lo7lBD9ynVc
+# Accuknox_Assignment
+# API for Social Networking application Friend System.
 
-## To Run this Project follow below:
+## Installation Steps
 
-```bash
-mkvirtualenv authenv
-pip install -r requirements.txt
-python manage.py makemigrations
-python manage.py migrate
-python manage.py runserver
-```
+Clone the repository:
+   
+   git clone https://github.com/sarthak-56/Accuknox_Assignment.git
+   cd Accuknox_Assignment
 
-#### There is a File "DjangoAuthAPI.postman_collection" which has Postman Collection You can import this file in your postman to test this API
+### Backend (Django)
+   
+1. Create Virtual Environment:
 
+   python -m venv venv
+   source venv/bin/activate   # On Windows use `venv\Scripts\activate
+
+2. Install the dependencies:
+
+   pip install -r requirements.txt
+
+3. Apply migrations:
+
+   python manage.py migrate
+
+4. Run the development server:
+
+   python manage.py runserver
+
+### Frontend (React.js)
+
+1. Navigate to the frontend directory:
+
+   cd userfrontend
+
+2. Install the dependencies:
+
+   npm install
+
+3. Start the development server:
+
+   npm start
+
+### Development server in Dockerfile 
+
+#### frontend(React.js) run command: docker run -p 3000:3000 cbbea5002c95
+
+#### backend(Django) run command: docker run -p 8000:8000 ae8a548d2a7d
